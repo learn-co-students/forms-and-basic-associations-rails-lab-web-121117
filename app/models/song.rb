@@ -8,12 +8,7 @@ class Song < ActiveRecord::Base
   end
 
   def genre_name
-    genre = self.genre
-    if genre
-      self.genre.name
-    else
-      "No genre"
-    end
+    self.try(:genre).try(:name)
   end
 
   def artist_name=(name)
@@ -21,18 +16,14 @@ class Song < ActiveRecord::Base
   end
 
   def artist_name
-    artist = self.artist
-    if artist
-      artist.name
-    else
-      "No artist"
-    end
+    self.try(:artist).try(:name)
   end
 
   def note_contents=(contents)
-    contents.each do |c|
-      note = Note.find_or_create_by(content: c)
-      self.notes << note
+    contents.each do |content|
+      if content.strip != ''
+        self.notes.build(content: content)
+      end
     end
   end
 
